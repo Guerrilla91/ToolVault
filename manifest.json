@@ -1,0 +1,17 @@
+{
+  "name": "ToolVault - Tool Inventory",
+  "short_name": "ToolVault",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "description": "Personal tool inventory and insurance documentation app.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
