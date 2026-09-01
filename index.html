@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ToolVault</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="shield">🔧</div>
+      <div>
+        <h1><span>TOOL</span>VAULT</h1>
+        <p>Inventory. Protect. Stay ready.</p>
+      </div>
+    </div>
+    <button id="headerAddBtn" class="round primary" aria-label="Add tool">+</button>
+  </header>
+
+  <main class="app-shell">
+    <section id="inventoryView" class="view active">
+      <section class="stats">
+        <article class="stat"><span>Total Items</span><strong id="toolCount">0</strong></article>
+        <article class="stat"><span>Est. Total Value</span><strong id="purchaseTotal">$0</strong></article>
+        <article class="stat"><span>Insurance Value</span><strong id="replacementTotal">$0</strong></article>
+        <article class="stat"><span>Receipts</span><strong id="receiptCount">0</strong></article>
+      </section>
+
+      <section class="search-row">
+        <input id="searchInput" type="search" placeholder="Search tools, brand, model, serial..." />
+        <button id="scanBtn">Scan</button>
+      </section>
+
+      <section class="filter-row">
+        <select id="categoryFilter"><option value="">All categories</option></select>
+        <select id="statusFilter">
+          <option value="">All status</option>
+          <option>Active</option><option>Lost</option><option>Stolen</option><option>Sold</option><option>Broken</option>
+        </select>
+        <select id="sortFilter">
+          <option value="updated">Recently updated</option>
+          <option value="name">Name A–Z</option>
+          <option value="valueHigh">Value high–low</option>
+          <option value="valueLow">Value low–high</option>
+        </select>
+      </section>
+
+      <section class="section-title-row">
+        <div><h2>All Tools</h2><p id="resultCount">0 items</p></div>
+        <button id="inventoryAddBtn" class="primary">+ Add Tool</button>
+      </section>
+
+      <section id="emptyState" class="empty">
+        <h2>No tools yet</h2>
+        <p>Add your first tool to start building your insurance inventory.</p>
+        <button id="emptyAddBtn" class="primary">Add First Tool</button>
+      </section>
+      <section id="toolGrid" class="grid"></section>
+    </section>
+
+    <section id="categoriesView" class="view">
+      <div class="page-head"><div><h2>Categories</h2><p>See where your tools and value are concentrated.</p></div></div>
+      <section id="categoryCards" class="category-grid"></section>
+    </section>
+
+    <section id="receiptsView" class="view">
+      <div class="page-head"><div><h2>Receipts</h2><p>Proof of purchase linked to your tools.</p></div></div>
+      <section id="receiptGrid" class="receipt-grid"></section>
+    </section>
+
+    <section id="reportsView" class="view">
+      <div class="page-head"><div><h2>Reports</h2><p>Create insurance-ready records you can save or email.</p></div></div>
+      <section class="report-card">
+        <h3>Tool Inventory PDF</h3>
+        <p>Creates a black-and-white report with tool photos, serial numbers, values, and signature lines.</p>
+        <div class="form-grid compact">
+          <label>Your name<input id="reportName" placeholder="Your name" /></label>
+          <label>Company<input id="reportCompany" placeholder="Company name" /></label>
+        </div>
+        <label class="check"><input id="includeReceipts" type="checkbox" /> Include receipt photos</label>
+        <button id="createReportBtn" class="primary">Create PDF Report</button>
+      </section>
+      <section class="report-card">
+        <h3>Data Exports</h3>
+        <p>Keep a copy of your list outside the app.</p>
+        <div class="action-grid">
+          <button id="csvBtn">Export CSV</button>
+          <button id="backupBtn">Backup JSON</button>
+          <label class="buttonlike">Restore Backup<input id="restoreInput" type="file" accept=".json,application/json" hidden /></label>
+        </div>
+      </section>
+    </section>
+
+    <section id="settingsView" class="view">
+      <div class="page-head"><div><h2>Settings</h2><p>Defaults used when you add tools and create reports.</p></div></div>
+      <section class="settings-card">
+        <label>Default owner name<input id="ownerNameSetting" placeholder="Your name" /></label>
+        <label>Default company<input id="companySetting" placeholder="Company" /></label>
+        <label>Default storage location<input id="locationSetting" placeholder="Service truck / garage" /></label>
+        <button id="saveSettingsBtn" class="primary">Save Settings</button>
+      </section>
+      <section class="settings-card">
+        <h3>Online Tool Lookup</h3>
+        <p>Search by tool name, model number, brand, UPC, or barcode. Tap a result to prefill a new inventory record.</p>
+        <div class="lookup-row">
+          <input id="onlineLookupInput" type="search" placeholder="Example: Milwaukee 2967-20 or UPC" />
+          <button id="onlineLookupBtn" class="primary">Search Online</button>
+        </div>
+        <p id="onlineLookupStatus" class="muted"></p>
+        <div id="onlineLookupResults" class="lookup-results"></div>
+      </section>
+
+      <section class="settings-card warning">
+        <h3>Protect your records</h3>
+        <p>ToolVault stores records on this device. Export a JSON backup regularly and keep it somewhere separate from your phone and tools.</p>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="inventoryView"><span>▣</span>Inventory</button>
+    <button class="nav-item" data-view="categoriesView"><span>▦</span>Categories</button>
+    <button class="nav-item" data-view="receiptsView"><span>▤</span>Receipts</button>
+    <button class="nav-item" data-view="reportsView"><span>▥</span>Reports</button>
+    <button class="nav-item" data-view="settingsView"><span>⚙</span>Settings</button>
+  </nav>
+
+  <dialog id="toolDialog">
+    <form id="toolForm" method="dialog">
+      <div class="dialog-head">
+        <h2 id="formTitle">Add Tool</h2>
+        <button type="button" id="closeDialog" class="icon-btn">✕</button>
+      </div>
+      <input type="hidden" id="toolId" />
+      <div class="quick-lookup">
+        <button type="button" id="lookupFromAddBtn">🔎 Look Up Tool Online</button>
+        <small>Search online and fill the tool details automatically.</small>
+      </div>
+      <div class="form-grid">
+        <label class="wide">Tool name<input id="name" required placeholder="M18 FUEL 1/2 in. Impact Wrench" /></label>
+        <label>Brand<input id="brand" placeholder="Milwaukee" /></label>
+        <label>Category<input id="category" list="categoryList" placeholder="Power Tools" />
+          <datalist id="categoryList">
+            <option value="Power Tools"></option><option value="Grinders"></option><option value="Impact Wrenches"></option>
+            <option value="Batteries"></option><option value="Welding"></option><option value="Sockets"></option>
+            <option value="Hand Tools"></option><option value="Measuring"></option><option value="Storage"></option>
+            <option value="Specialty Tools"></option><option value="Other"></option>
+          </datalist>
+        </label>
+        <label>Model number<input id="model" /></label>
+        <label>Serial number<input id="serial" /></label>
+        <label>Barcode / UPC<input id="barcode" /></label>
+        <label>Purchase price<input id="purchasePrice" type="number" min="0" step="0.01" inputmode="decimal" /></label>
+        <label>Replacement value<input id="replacementValue" type="number" min="0" step="0.01" inputmode="decimal" /></label>
+        <label>Purchase date<input id="purchaseDate" type="date" /></label>
+        <label>Purchased from<input id="store" placeholder="Home Depot" /></label>
+        <label>Storage location<input id="location" placeholder="Service truck / garage" /></label>
+        <label>Status<select id="status"><option>Active</option><option>Lost</option><option>Stolen</option><option>Sold</option><option>Broken</option></select></label>
+        <label>Condition<select id="condition"><option>Good</option><option>New</option><option>Fair</option><option>Poor</option></select></label>
+        <label class="wide">Notes<textarea id="notes" rows="3" placeholder="Kit contents, markings, identifying features..."></textarea></label>
+        <label class="wide upload">Tool photos<input id="toolPhotos" type="file" accept="image/*" capture="environment" multiple /><small>Take or choose photos of the tool and model/serial plate.</small></label>
+        <div id="toolPhotoPreview" class="preview wide"></div>
+        <label class="wide upload">Receipt photos<input id="receiptPhotos" type="file" accept="image/*" capture="environment" multiple /><small>Photograph or upload the receipt.</small></label>
+        <div id="receiptPhotoPreview" class="preview wide"></div>
+      </div>
+      <div class="dialog-actions"><button type="button" id="cancelBtn">Cancel</button><button type="submit" class="primary">Save Tool</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="detailDialog"><div id="detailContent"></div></dialog>
+
+  <dialog id="scanDialog">
+    <div class="scan-box">
+      <div class="dialog-head"><h2>Scan Barcode</h2><button id="closeScanBtn" class="icon-btn">✕</button></div>
+      <video id="scanVideo" playsinline muted></video>
+      <p id="scanStatus">Point the camera at a barcode.</p>
+      <button id="scanFallbackBtn">Enter Barcode Manually</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
